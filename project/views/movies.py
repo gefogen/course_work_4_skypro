@@ -1,8 +1,9 @@
-from flask import request
+from flask import request, abort
 from flask_restx import Resource, Namespace
 
 from project.container import movie_service
 from project.dao.models import MovieSchema
+from project.error import ItemNotFound
 
 movie_ns = Namespace('movies')
 movies_schema = MovieSchema(many=True)
@@ -16,11 +17,14 @@ class MoviesViews(Resource):
         'status': 'if "new": sort by release year'
         })
     def get(self):
-        page = request.args.get('page', type=int)
-        status = request.args.get('status')
+        try:
+            page = request.args.get('page', type=int)
+            status = request.args.get('status')
 
-        movies = movie_service.get_all(page, status)
-        return movies_schema.dump(movies), 200
+            movies = movie_service.get_all(page, status)
+            return movies_schema.dump(movies), 200
+        except ItemNotFound:
+            abort(404)
 
 
 
@@ -28,5 +32,8 @@ class MoviesViews(Resource):
 class MovieView(Resource):
     @movie_ns.doc(description='Get movie by id')
     def get(self, mid):
-        movie = movie_service.get_one(mid)
-        return movie_schema.dump(movie), 200
+        try:
+            movie = movie_service.get_one(mid)
+            return movie_schema.dump(movie), 200
+        except ItemNotFound:
+            abort(404)

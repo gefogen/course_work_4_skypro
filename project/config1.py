@@ -6,7 +6,6 @@ BASEDIR = Path(__file__).resolve().parent.parent
 
 
 class BaseConfig:
-    SECRET_KEY = 'you-will-never-guess'
     JWT_SECRET = 'you-will-never-guess'
     JWT_ALGORITHM = 'HS256'
     JSON_AS_ASCII = False

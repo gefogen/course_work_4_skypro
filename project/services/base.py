@@ -1,4 +1,5 @@
 from flask import abort
+from project.error import ItemNotFound
 
 
 class BaseService:
@@ -9,14 +10,14 @@ class BaseService:
         """get one item by id"""
         item = self.dao.get_one(pk)
         if not item:
-            abort(404)
+            raise ItemNotFound
         return item
 
     def get_all(self, page, do_sort=False):
         """get all items"""
         items = self.dao.get_all(page, do_sort)
         if not items:
-            abort(404)
+            raise ItemNotFound
         return items
     
     def create(self, data):

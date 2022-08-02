@@ -3,6 +3,7 @@ from flask_restx import Resource, Namespace, abort
 
 from project.container import favourite_service, auth_service, user_service, movie_service
 from project.dao.models import FavouriteSchema, MovieSchema
+from project.decorators import auth_required
 
 favourite_ns = Namespace('favorites')
 favourites_schema = FavouriteSchema(many=True)
@@ -12,6 +13,7 @@ movies_schema = MovieSchema(many=True)
 
 @favourite_ns.route('/movies/')
 class FavouritesViews(Resource):
+    @auth_required
     @favourite_ns.doc(description='Get user favourites')
     def get(self):
         auth_data = request.headers['Authorization']
@@ -27,6 +29,7 @@ class FavouritesViews(Resource):
 
 @favourite_ns.route('/movies/<int:movie_id>/')
 class FavouriteView(Resource):
+    @auth_required
     @favourite_ns.doc(description='Add favourites')
     def post(self, movie_id):
         auth_data = request.headers['Authorization']
@@ -41,6 +44,7 @@ class FavouriteView(Resource):
 
 
     @favourite_ns.doc(description='Delete favourites')
+    @auth_required
     def delete(self, movie_id):
         auth_data = request.headers['Authorization']
         token = auth_data.split("Bearer ")[-1]
