@@ -10,6 +10,10 @@ class BaseDAO:
         self.session = session
         self.model = model
 
+    @property
+    def _items_per_page(self) -> int:
+        return current_app.config['ITEMS_PER_PAGE']
+
     def get_one(self, pk):
         """get item by id"""
         return self.session.query(self.model).get(pk)
@@ -21,7 +25,7 @@ class BaseDAO:
         if do_sort:
             content = content.order_by(desc(self.model.year))
         if page:
-            content = content.limit(current_app.config.get('ITEMS_PER_PAGE')).offset((page-1) * current_app.config.get('ITEMS_PER_PAGE'))
+            content = content.paginate(page, self._items_per_page).items
 
         return content.all()
     
